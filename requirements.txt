@@ -1,5 +1,0 @@
-colorama
-httpx
-licensing
-requests
-pypresence
