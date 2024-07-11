@@ -1,5 +1,4 @@
 process.title = 'Discord Promotion Generator (OPERA GX)';
-
 const https = require('https');
 const readlineSync = require('readline-sync');
 const randomstring = require('randomstring');
@@ -7,7 +6,6 @@ const path = require('path');
 const child_process = require('child_process');
 const fs = require('fs');
 const chalk = require('chalk');
-
 class DiscordPromoGenerator {
     constructor() {
         this.baseUrl = 'https://api.discord.gx.games/v1/direct-fulfillment';
